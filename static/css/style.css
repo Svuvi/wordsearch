@@ -1,0 +1,167 @@
+html {
+	overflow-y: scroll;
+}
+:root {
+	--bgcolor: white;
+	--fontcolor: #444;
+	--linkcolor: #00e;
+	--visitedcolor: #551a8b;
+	--precolor: #fff;
+	--prebgcolor: #000;
+}
+
+body {
+	max-width: 800px;
+	margin: 40px auto;
+	padding: 0 10px;
+	font: 14px/1.5 monospace;
+	color: var(--fontcolor);
+	background: var(--bgcolor);
+}
+
+input.search {
+    flex: 1;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #333
+}
+
+button.new-word, input.submit {
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+}
+
+.search-box {
+    margin: 0 auto 0;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.result-box {
+    margin-top: 1rem;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px; 
+}
+
+.adding-new-word {
+    border-top: 1px solid black;
+    justify-content: space-between;
+}
+
+table {
+    border-collapse: collapse;
+}
+tr {
+    background-color: var(--bgcolor);
+    transition: 0.1s ease
+}
+td {
+    border: none;
+}
+tr:hover {
+    background-color: #cbcbcb76;
+}
+
+a:link {
+	color: var(--linkcolor);
+}
+a:visited {
+	color: var(--visitedcolor);
+}
+a:active {
+	color: var(--visitedcolor);
+}
+h1,
+h2,
+h3 {
+	line-height: 1.2;
+}
+p > code {
+	color: var(--precolor);
+	background: var(--prebgcolor);
+	padding: 2px;
+}
+code {
+	color: var(--precolor);
+	background: var(--prebgcolor);
+	padding: 2px;
+}
+pre {
+	color: var(--precolor);
+	background: var(--prebgcolor);
+	padding: 24px;
+	overflow-x: auto;
+}
+article {
+}
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+}
+figcaption {
+	color: #888;
+	font: 12px/1.5 monospace;
+	text-align: center;
+}
+figure {
+	margin: auto;
+}
+img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: auto;
+}
+
+.photo-gallery {
+	display: flex;
+	gap: 10px;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.photo > a > img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+}
+
+@media (max-width: 768px) {
+	.photo-gallery {
+		flex-direction: column;
+	}
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bgcolor: black;
+		--fontcolor: white;
+		--linkcolor: #5bf;
+		--visitedcolor: #ae5ee0;
+		--precolor: #fff;
+		--prebgcolor: #383838;
+	}
+	.search-box, input.word {
+		background-color: #333333;
+	}
+	input.search, input.word {
+		color: rgb(187, 187, 187)
+	}
+	input.submit {
+		color: white
+	}
+}

@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/output.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/htmx.min.js"></script>
     <title>Svuv site</title>
 </head>
 <body>
-    <p>If you see this, it means that I configured the domain but havent build the site yet. Return later I guess</p>
+    <p>Hello {{ .Name }}</p>
+    <div class="search-box">
+        <div class="row">
+            <input class="search" name="search" type="text" placeholder="Zoek naar het woord" autocomplete="off" hx-post="/" hx-trigger="input changed delay:150ms" hx-target=".result-box">
+            <!-- <button class="new-word">+ nieuw</button> -->
+        </div>
+        <form class="adding-new-word row">
+            <input class="word" type="text" id="woord" placeholder="typ het woord in">
+            <input class="word" type="text" id="woordsoort" placeholder="woordsoort">
+            <input class="word" type="text" id="uitspraak" placeholder="uitspraak">
+            <input class="word" type="text" id="aantekening" placeholder="vertaling/aantekening">
+            <input class="submit" type="submit" value="verzend" style="background: transparent; border: 0; outline: 0; cursor: pointer;">
+        </form>
+    </div>
+    <div class="result-box">
+    </div>
 </body>
 </html>
