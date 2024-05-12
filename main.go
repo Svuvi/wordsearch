@@ -31,7 +31,7 @@ func renderWordsTable(query string, db *sql.DB) []byte {
 		var word Word
 		rows.Scan(&word.Woord, &word.Woordsoort, &word.Uitspraak, &word.Vertaling)
 		realData = append(realData, word)
-		log.Printf("{Woord: %s, Woordsoort: %s, Uitspraak: %s, Vertaling: %s}", word.Woord, word.Woordsoort, word.Uitspraak, word.Vertaling)
+		// log.Printf("{Woord: %s, Woordsoort: %s, Uitspraak: %s, Vertaling: %s}", word.Woord, word.Woordsoort, word.Uitspraak, word.Vertaling)
 	}
 
 	var wordsTable bytes.Buffer
@@ -46,6 +46,22 @@ func searchHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	w.Write(renderWordsTable(query, db))
 	log.Printf("Rendered a table for query \"%s\"", query)
+}
+
+func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	r.ParseForm()
+	log.Println(r.PostForm)
+
+	newWord := Word{Woord: r.PostForm["woord"][0],
+		Woordsoort: r.PostForm["woordsoort"][0],
+		Uitspraak:  r.PostForm["uitspraak"][0],
+		Vertaling:  r.PostForm["vertaling"][0]}
+
+	statement, _ := db.Prepare("INSERT INTO Words (Woord, Woordsoort, Uitspraak, Vertaling) VALUES (?, ?, ?, ?)")
+	_, err := statement.Exec(newWord.Woord, newWord.Woordsoort, newWord.Uitspraak, newWord.Vertaling)
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,12 +81,16 @@ func main() {
 	searchHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
 		searchHandler(w, r, database)
 	}
+	addHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
+		addHandler(w, r, database)
+	}
 
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("GET /static/", http.StripPrefix("/static/", fs))
 
 	router.HandleFunc("GET /", indexHandler)
 	router.HandleFunc("POST /", searchHandlerWithDB)
+	router.HandleFunc("POST /add/", addHandlerWithDB)
 
 	server := http.Server{
 		Addr:    port,
