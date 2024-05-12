@@ -8,10 +8,9 @@
     <title>Svuv site</title>
 </head>
 <body>
-    <p>Hello {{ .Name }}</p>
     <div class="search-box">
         <div class="row">
-            <input class="search" name="search" type="text" placeholder="Zoek naar het woord" autocomplete="off" hx-post="/" hx-trigger="input changed delay:150ms" hx-target=".result-box">
+            <input class="search" name="search" type="text" placeholder="Zoek naar het woord" autocomplete="off" hx-post="/" hx-trigger="input changed throttle:150ms, load" hx-target=".result-box">
             <!-- <button class="new-word">+ nieuw</button> -->
         </div>
         <form class="adding-new-word row">
