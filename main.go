@@ -57,7 +57,7 @@ func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Uitspraak:  r.PostForm["uitspraak"][0],
 		Vertaling:  r.PostForm["vertaling"][0]}
 
-	statement, _ := db.Prepare("INSERT INTO Words (Woord, Woordsoort, Uitspraak, Vertaling) VALUES (?, ?, ?, ?)")
+	statement, _ := db.Prepare("INSERT OR REPLACE INTO Words (Woord, Woordsoort, Uitspraak, Vertaling) VALUES (?, ?, ?, ?)")
 	_, err := statement.Exec(newWord.Woord, newWord.Woordsoort, newWord.Uitspraak, newWord.Vertaling)
 	if err != nil {
 		log.Print(err)
