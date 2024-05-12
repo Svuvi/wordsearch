@@ -64,6 +64,17 @@ func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 }
 
+func deleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	woord := r.PathValue("woord")
+	log.Print("Deleting word: ", woord)
+
+	_, err := db.Exec("DELETE FROM Words WHERE Woord = $1", woord)
+	if err != nil {
+		log.Print("Error when deleting word: ", woord)
+		log.Print(err)
+	}
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("./templates/index.html"))
 	t.Execute(w, "")
@@ -84,6 +95,9 @@ func main() {
 	addHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
 		addHandler(w, r, database)
 	}
+	deleteHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
+		deleteHandler(w, r, database)
+	}
 
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("GET /static/", http.StripPrefix("/static/", fs))
@@ -91,6 +105,7 @@ func main() {
 	router.HandleFunc("GET /", indexHandler)
 	router.HandleFunc("POST /", searchHandlerWithDB)
 	router.HandleFunc("POST /add/", addHandlerWithDB)
+	router.HandleFunc("DELETE /delete/{woord}", deleteHandlerWithDB)
 
 	server := http.Server{
 		Addr:    port,

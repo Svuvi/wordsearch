@@ -1,13 +1,15 @@
 <table width="100%">
     <tr>
         <th></th>
+        <th></th>
         <th>woordsoort</th>
         <th>uitspraak</th>
         <th style="text-align: right;">vertaling/aantekening</th>
     </tr>
     {{ range . }}
     <tr>
-        <td>{{ .Woord }}</td>
+        <td><a class="delete" hx-delete="/delete/{{ .Woord }}" title="click to delete">[x]</a></td>
+        <td name="woord">{{ .Woord }}</td>
         <td style="text-align: center;">{{ .Woordsoort }}</td>
         <td style="text-align: center;">{{ .Uitspraak }}</td>
         <td style="text-align: right;">{{ .Vertaling }}</td>
