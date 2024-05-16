@@ -1,7 +1,3 @@
-# How to use
+My first Go + HTMX app. Glorified todo list app, with storing and searching words in a database.
 
-1. Install golang if you haven't https://go.dev/doc/install
-2. Clone this repo
-3. Open terminal in the folder
-4. Type `go run .` and enter
-5. Open http://localhost:8080 in browser
+There is no authorization and proper input sanitation, it can only be used on localhost
