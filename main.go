@@ -3,9 +3,10 @@ package main
 import (
 	"bytes"
 	"database/sql"
-	"html/template"
 	"log"
 	"net/http"
+	"strings"
+	"text/template"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -17,6 +18,17 @@ type Word struct {
 	Vertaling  string
 }
 
+func highlightQuery(text, query string) string {
+	if query == "" {
+		return text
+	}
+	// Escape special HTML characters in the query
+	escapedQuery := template.HTMLEscapeString(query)
+	// Replace occurrences of the query with highlighted version
+	highlighted := strings.ReplaceAll(text, escapedQuery, "<b>"+escapedQuery+"</b>")
+	return highlighted
+}
+
 func renderWordsTable(query string, db *sql.DB) []byte {
 	t := template.Must(template.ParseFiles("./templates/table.html"))
 	/* mockData := []Word{
@@ -26,10 +38,15 @@ func renderWordsTable(query string, db *sql.DB) []byte {
 	} */
 	var realData []Word
 
-	rows, _ := db.Query("SELECT Woord, Woordsoort, Uitspraak, Vertaling FROM Words WHERE Woord LIKE '%' || :query || '%';", query)
+	queryString := "%" + query + "%"
+	rows, _ := db.Query("SELECT Woord, Woordsoort, Uitspraak, Vertaling FROM Words WHERE Woord LIKE ? OR Vertaling LIKE ?;", queryString, queryString)
 	for rows.Next() {
 		var word Word
 		rows.Scan(&word.Woord, &word.Woordsoort, &word.Uitspraak, &word.Vertaling)
+
+		word.Woord = highlightQuery(word.Woord, query)
+		word.Vertaling = highlightQuery(word.Vertaling, query)
+
 		realData = append(realData, word)
 		// log.Printf("{Woord: %s, Woordsoort: %s, Uitspraak: %s, Vertaling: %s}", word.Woord, word.Woordsoort, word.Uitspraak, word.Vertaling)
 	}
