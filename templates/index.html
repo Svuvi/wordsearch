@@ -6,11 +6,6 @@
     <link rel="stylesheet" href="static/css/style.css">
     <script src="static/js/htmx.min.js"></script>
     <title>Svuv site</title>
-    <script>
-        function makeSearchElementTrigger() {
-             setTimeout(() => {htmx.trigger("input.search", "wordAdded")}, 100) 
-        }
-    </script>
 </head>
 <body>
     <div class="search-box">
@@ -23,7 +18,7 @@
             <input class="word" type="text" name="woordsoort" placeholder="woordsoort" autocomplete="off">
             <input class="word" type="text" name="uitspraak" placeholder="uitspraak" autocomplete="off">
             <input class="word" type="text" name="vertaling" placeholder="vertaling/aantekening" autocomplete="off">
-            <button hx-post="/add/" hx-swap="none" style="background: transparent; border: 0; outline: 0; cursor: pointer;" onmouseup="makeSearchElementTrigger()">Verzend</button>
+            <button class="new-word" hx-post="/add/" hx-swap="none" hx-on::after-request="htmx.trigger("input.search", "wordAdded")">Verzend</button>
         </div>
     </div>
     <div class="result-box">
