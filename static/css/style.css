@@ -29,6 +29,10 @@ input.search {
     color: #333
 }
 
+input.word {
+	display: flex 1;
+}
+
 button.new-word, input.submit {
     background: transparent;
     border: 0;
@@ -48,6 +52,7 @@ button.new-word, input.submit {
 
 .row {
     display: flex;
+	flex-wrap: wrap;
     align-items: center;
     padding: 10px 20px; 
 }
@@ -55,6 +60,19 @@ button.new-word, input.submit {
 .adding-new-word {
     border-top: 1px solid black;
     justify-content: space-between;
+	flex-wrap: wrap;
+	padding: 10px, 0;
+}
+
+.adding-new-word input.word {
+    flex: 1;
+    margin: 5px; /* Adding margin to ensure spacing between input fields */
+    min-width: 150px; /* Ensure inputs don't shrink too much */
+}
+
+.adding-new-word button {
+    flex: 1 0 auto; /* This makes the button take its content width */
+    margin: 5px;
 }
 
 table {
