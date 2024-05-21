@@ -2,3 +2,4 @@
 *.db
 *.db-journal
 words.db
+/static/js/htmx.js
