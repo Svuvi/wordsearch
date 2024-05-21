@@ -1,12 +1,12 @@
 <table width="100%">
     <tr>
         <th></th>
-        <th></th>
+        <th style="text-align: left;">woordenaantal: {{ .Count.Matched }}/{{ .Count.Total }}</th>
         <th>woordsoort</th>
         <th>uitspraak</th>
         <th style="text-align: right;">vertaling/aantekening</th>
     </tr>
-    {{ range . }}
+    {{ range .Words }}
     <tr>
         <td><a class="delete" hx-delete="/delete/{{ .Woord }}" title="click to delete" onmouseup="makeSearchElementTrigger()">[x]</a></td>
         <td name="woord">{{ .Woord }}</td>

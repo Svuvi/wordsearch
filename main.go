@@ -8,6 +8,8 @@ import (
 	"strings"
 	"text/template"
 
+	_ "net/http/pprof"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -16,6 +18,27 @@ type Word struct {
 	Woordsoort string
 	Uitspraak  string
 	Vertaling  string
+}
+
+type TableTmplData struct {
+	Words *[]Word
+	Count struct {
+		Total   int
+		Matched int
+	}
+}
+
+func NewTableTmplData(words *[]Word, countTotal int) TableTmplData {
+	return TableTmplData{
+		Words: words,
+		Count: struct {
+			Total   int
+			Matched int
+		}{
+			Total:   countTotal,
+			Matched: len(*words),
+		},
+	}
 }
 
 func highlightQuery(text, query string) string {
@@ -31,12 +54,7 @@ func highlightQuery(text, query string) string {
 
 func renderWordsTable(query string, db *sql.DB) []byte {
 	t := template.Must(template.ParseFiles("./templates/table.html"))
-	/* mockData := []Word{
-		{Woord: "frikandel", Woordsoort: "nw", Uitspraak: "[фрикандель]", Vertaling: ""},
-		{Woord: "stroopwafel", Woordsoort: "nw", Uitspraak: "[строопвафел]", Vertaling: ""},
-		{Woord: "kaneelbroodje", Woordsoort: "nw", Uitspraak: "[канельброодье]", Vertaling: "булочка с корицей"},
-	} */
-	var realData []Word
+	var words []Word
 
 	queryString := "%" + query + "%"
 	rows, _ := db.Query("SELECT Woord, Woordsoort, Uitspraak, Vertaling FROM Words WHERE Woord LIKE ? OR Vertaling LIKE ?;", queryString, queryString)
@@ -47,12 +65,17 @@ func renderWordsTable(query string, db *sql.DB) []byte {
 		word.Woord = highlightQuery(word.Woord, query)
 		word.Vertaling = highlightQuery(word.Vertaling, query)
 
-		realData = append(realData, word)
+		words = append(words, word)
 		// log.Printf("{Woord: %s, Woordsoort: %s, Uitspraak: %s, Vertaling: %s}", word.Woord, word.Woordsoort, word.Uitspraak, word.Vertaling)
 	}
 
+	var wordsTotal int
+	db.QueryRow("SELECT COUNT(*) FROM Words").Scan(&wordsTotal)
+
+	data := NewTableTmplData(&words, wordsTotal)
+
 	var wordsTable bytes.Buffer
-	t.Execute(&wordsTable, realData)
+	t.Execute(&wordsTable, data)
 	return wordsTable.Bytes()
 }
 
