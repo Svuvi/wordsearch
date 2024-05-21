@@ -34,10 +34,12 @@ input.word {
 }
 
 button.new-word, input.submit {
-    background: transparent;
-    border: 0;
-    outline: 0;
-    cursor: pointer;
+	background: transparent;
+	cursor: pointer;
+	border-radius: 2.5px;
+	border-width: 1px;
+	padding-block: 1px; 
+	padding-inline: 2px;
 }
 
 .search-box {
@@ -179,11 +181,22 @@ a.delete:hover {
 	}
 	.search-box, input.word {
 		background-color: #333333;
+
 	}
 	input.search, input.word {
-		color: rgb(187, 187, 187)
+		color: rgb(255, 253, 253)
 	}
 	input.submit {
 		color: white
+	}
+	button.new-word {
+		color: rgb(187, 187, 187);
+		border-style: solid;
+	}
+	input.word {
+		border-style: solid;
+		border-width: 1px;
+		padding: 2px 4px 2px 4px;
+		border-radius: 2.5px;
 	}
 }
