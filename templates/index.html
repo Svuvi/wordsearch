@@ -18,7 +18,7 @@
             <input class="word" type="text" name="woordsoort" placeholder="woordsoort" autocomplete="off">
             <input class="word" type="text" name="uitspraak" placeholder="uitspraak" autocomplete="off">
             <input class="word" type="text" name="vertaling" placeholder="vertaling/aantekening" autocomplete="off">
-            <button class="new-word" hx-post="/add/" hx-swap="none" hx-on::after-request="htmx.trigger("input.search", "wordAdded")">Verzend</button>
+            <button class="new-word" hx-post="/add/" hx-swap="none" hx-on::after-request='htmx.trigger("input.search", "wordAdded")'>Verzend</button>
         </div>
     </div>
     <div class="result-box">

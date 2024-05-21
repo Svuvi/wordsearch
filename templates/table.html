@@ -8,7 +8,7 @@
     </tr>
     {{ range .Words }}
     <tr>
-        <td><a class="delete" hx-delete="/delete/{{ .Woord }}" title="click to delete" onmouseup="makeSearchElementTrigger()">[x]</a></td>
+        <td><a class="delete" hx-delete="/delete/{{ .Woord }}" title="click to delete" hx-on::after-request='htmx.trigger("input.search", "wordAdded")'>[x]</a></td>
         <td name="woord">{{ .Woord }}</td>
         <td style="text-align: center;">{{ .Woordsoort }}</td>
         <td style="text-align: center;">{{ .Uitspraak }}</td>
