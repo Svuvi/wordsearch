@@ -92,6 +92,12 @@ func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	r.ParseForm()
 	log.Println(r.PostForm)
 
+	if len(r.PostForm["woord"][0]) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Println("The user tried to add an empty string as a word")
+		return
+	}
+
 	newWord := Word{Woord: r.PostForm["woord"][0],
 		Woordsoort: r.PostForm["woordsoort"][0],
 		Uitspraak:  r.PostForm["uitspraak"][0],
@@ -106,11 +112,21 @@ func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func deleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	woord := r.PathValue("woord")
-	log.Print("Deleting word: ", woord)
+	log.Printf("Deleting word: '%s'", woord)
 
-	_, err := db.Exec("DELETE FROM Words WHERE Woord = $1", woord)
+	var query string
+	var err error
+	if woord == "" {
+		log.Println("Deleting empty string word")
+		query = "DELETE FROM Words WHERE Woord = '' OR Woord IS NULL;" // for some reason doesnt work here, but does work in SQLite DB browser
+		_, err = db.Exec(query)
+	} else {
+		query = "DELETE FROM Words WHERE Woord = $1;"
+		_, err = db.Exec(query, woord)
+	}
+
 	if err != nil {
-		log.Print("Error when deleting word: ", woord)
+		log.Printf("Error when deleting word: '%s", woord)
 		log.Print(err)
 	}
 }
@@ -146,6 +162,7 @@ func main() {
 	router.HandleFunc("POST /", searchHandlerWithDB)
 	router.HandleFunc("POST /add/", addHandlerWithDB)
 	router.HandleFunc("DELETE /delete/{woord}", deleteHandlerWithDB)
+	router.HandleFunc("DELETE /delete/", deleteHandlerWithDB) // a way to delete an empty string word
 
 	server := http.Server{
 		Addr:    port,
