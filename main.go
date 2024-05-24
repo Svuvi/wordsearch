@@ -13,6 +13,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Handler struct {
+	db *sql.DB
+}
+
 type Word struct {
 	Woord      string
 	Woordsoort string
@@ -79,16 +83,16 @@ func renderWordsTable(query string, db *sql.DB) []byte {
 	return wordsTable.Bytes()
 }
 
-func searchHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func (c Handler) search(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	query := r.PostForm["search"][0]
 
-	w.Write(renderWordsTable(query, db))
+	w.Write(renderWordsTable(query, c.db))
 	log.Printf("Rendered a table for query \"%s\"", query)
 }
 
-func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func (c Handler) add(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	log.Println(r.PostForm)
 
@@ -103,14 +107,14 @@ func addHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Uitspraak:  r.PostForm["uitspraak"][0],
 		Vertaling:  r.PostForm["vertaling"][0]}
 
-	statement, _ := db.Prepare("INSERT OR REPLACE INTO Words (Woord, Woordsoort, Uitspraak, Vertaling) VALUES (?, ?, ?, ?)")
+	statement, _ := c.db.Prepare("INSERT OR REPLACE INTO Words (Woord, Woordsoort, Uitspraak, Vertaling) VALUES (?, ?, ?, ?)")
 	_, err := statement.Exec(newWord.Woord, newWord.Woordsoort, newWord.Uitspraak, newWord.Vertaling)
 	if err != nil {
 		log.Print(err)
 	}
 }
 
-func deleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func (c Handler) delete(w http.ResponseWriter, r *http.Request) {
 	woord := r.PathValue("woord")
 	log.Printf("Deleting word: '%s'", woord)
 
@@ -119,10 +123,10 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if woord == "" {
 		log.Println("Deleting empty string word")
 		query = "DELETE FROM Words WHERE Woord = '' OR Woord IS NULL;" // for some reason doesnt work here, but does work in SQLite DB browser
-		_, err = db.Exec(query)
+		_, err = c.db.Exec(query)
 	} else {
 		query = "DELETE FROM Words WHERE Woord = $1;"
-		_, err = db.Exec(query, woord)
+		_, err = c.db.Exec(query, woord)
 	}
 
 	if err != nil {
@@ -131,38 +135,35 @@ func deleteHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func (c Handler) index(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("./templates/index.html"))
 	t.Execute(w, "")
 }
 
 func main() {
 	port := ":8080"
-
 	router := http.NewServeMux()
-	database, _ := sql.Open("sqlite3", "./words.db")
+
+	database, err := sql.Open("sqlite3", "./words.db")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS Words ( Woord TEXT PRIMARY KEY, Woordsoort TEXT, Uitspraak TEXT, Vertaling TEXT );")
 	statement.Exec()
 
-	searchHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
-		searchHandler(w, r, database)
-	}
-	addHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
-		addHandler(w, r, database)
-	}
-	deleteHandlerWithDB := func(w http.ResponseWriter, r *http.Request) {
-		deleteHandler(w, r, database)
+	handler := Handler{
+		db: database,
 	}
 
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("GET /static/", http.StripPrefix("/static/", fs))
 
-	router.HandleFunc("GET /", indexHandler)
-	router.HandleFunc("POST /", searchHandlerWithDB)
-	router.HandleFunc("POST /add/", addHandlerWithDB)
-	router.HandleFunc("DELETE /delete/{woord}", deleteHandlerWithDB)
-	router.HandleFunc("DELETE /delete/", deleteHandlerWithDB) // a way to delete an empty string word
+	router.HandleFunc("GET /", handler.index)
+	router.HandleFunc("POST /", handler.search)
+	router.HandleFunc("POST /add/", handler.add)
+	router.HandleFunc("DELETE /delete/{woord}", handler.delete)
+	router.HandleFunc("DELETE /delete/", handler.delete) // a way to delete an empty string word
 
 	server := http.Server{
 		Addr:    port,
