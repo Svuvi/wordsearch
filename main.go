@@ -18,10 +18,11 @@ type Handler struct {
 }
 
 type Word struct {
-	Woord      string
-	Woordsoort string
-	Uitspraak  string
-	Vertaling  string
+	Woord            string
+	WoordHighlighted string
+	Woordsoort       string
+	Uitspraak        string
+	Vertaling        string
 }
 
 type TableTmplData struct {
@@ -66,7 +67,7 @@ func renderWordsTable(query string, db *sql.DB) []byte {
 		var word Word
 		rows.Scan(&word.Woord, &word.Woordsoort, &word.Uitspraak, &word.Vertaling)
 
-		word.Woord = highlightQuery(word.Woord, query)
+		word.WoordHighlighted = highlightQuery(word.Woord, query)
 		word.Vertaling = highlightQuery(word.Vertaling, query)
 
 		words = append(words, word)
