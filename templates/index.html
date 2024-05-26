@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/css/style.css">
     <script src="static/js/htmx.min.js"></script>
-    <title>Svuv site</title>
+    <title>WordSearch app</title>
 </head>
 <body>
+    <p>Logged in as {{ .Username }}. <a href="/logout">Log out</a></p>
     <div class="search-box">
         <div class="row">
             <input class="search" name="search" type="text" placeholder="Zoek naar het woord" autocomplete="off" hx-post="/" hx-trigger="input changed, load, wordAdded" hx-target=".result-box">

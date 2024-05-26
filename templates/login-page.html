@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register or log in - WordSearch app</title>
+    <script src="static/js/htmx.min.js"></script>
+    <!-- <script type="module" src="/static/js/md-block.js"></script> -->
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="article">
+        <div>
+            <h1 id="welcome-to-wordsearch-app">Welcome to wordsearch app</h1>
+            <p>This is a database that you can use to store words and their definitions as you learn them.</p>
+            <p>Im an amateur and I built this app to help me learn both Dutch and web-development in <a href="https://go.dev/">Golang</a>, you can see the source code <a href="https://github.com/Svuvi/wordsearch">here</a>.</p>
+            <p>All of your data is stored as plain text in my database with NO encryption. So I (and potential malicious actors) have full access to it. And I&#39;m not knowledgeable enough to implement all of the best practices for data and account protection. Never and I mean <strong>NEVER</strong> use this app with any of your real passwords.</p>
+            <p>And don&#39;t store any data that could be harmful to you when leaked.</p>
+        </div>
+        <div>
+            <h1 id="welkom-bij-de-woordzoeker-app">Welkom bij de woordzoeker app</h1>
+            <p>Dit is een database die je kunt gebruiken om woorden en hun definities op te slaan terwijl je ze leert.</p>
+            <p>Ik ben een amateur en ik heb deze app gemaakt om me te helpen Nederlands en web-ontwikkeling in <a href="https://go.dev/">Golang</a> te leren, je kunt de source code <a href="https://github.com/Svuvi/wordsearch">hier</a> zien. </p>
+            <p>Al je gegevens worden opgeslagen als platte tekst in mijn database zonder encryptie. Dus ik (en potentiële kwaadwillenden) hebben er volledige toegang toe. En ik ben niet deskundig genoeg om alle best practices voor gegevens- en accountbeveiliging te implementeren. Gebruik deze app nooit en dan ook echt <strong>NOOIT</strong> met je echte wachtwoorden.</p>
+            <p>En sla geen gegevens op die schadelijk voor je kunnen zijn als ze uitlekken.</p>
+        </div>
+        <div class="login-form">
+            {{ if or (eq .Username "") (not .Username) }}
+                <form hx-post="/login" hx-target="#response-div">
+                    <p>Username:</p>
+                    <input type="username" name="username" required>
+                    <p>Password (there is no way to restore it, so save it):</p>
+                    <input type="password" name="password" required>
+                    <button>Register or Log In</button>
+                    <div id="response-div"></div>
+                </form>
+            {{ else }}
+                <p>You are logged in as {{ .Username }}. <a href="/logout">Log out</a></p>
+            {{ end }}
+        </div>
+    </div>
+</body>
+</html>
